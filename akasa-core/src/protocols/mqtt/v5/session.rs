@@ -41,12 +41,12 @@ pub struct Session {
     pub(super) qos2_pids: HashMap<Pid, u64>,
 
     pub(super) client_id: ClientId,
-    pub client_identifier: Arc<String>,
+    pub client_identifier: Arc<str>,
     pub assigned_client_id: bool,
     pub(super) server_keep_alive: bool,
     // (username, Option<role>)
     pub scram_auth_result: Option<(String, Option<String>)>,
-    pub username: Option<Arc<String>>,
+    pub username: Option<Arc<str>>,
     pub keep_alive: u16,
     pub clean_start: bool,
     pub last_will: Option<LastWill>,
@@ -69,7 +69,7 @@ pub struct Session {
     pub(super) request_response_info: bool,
     pub(super) request_problem_info: bool,
     pub user_properties: Vec<UserProperty>,
-    pub auth_method: Option<Arc<String>>,
+    pub auth_method: Option<Arc<str>>,
 }
 
 pub struct SessionState {
@@ -108,7 +108,7 @@ impl Session {
             qos2_pids: HashMap::new(),
 
             client_id: ClientId::max_value(),
-            client_identifier: Arc::new(String::new()),
+            client_identifier: Arc::from(String::new()),
             assigned_client_id: false,
             server_keep_alive: false,
             scram_auth_result: None,

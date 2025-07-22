@@ -31,7 +31,7 @@ pub(crate) fn build_error_connack<'a, R: Into<Cow<'a, str>>>(
     reason_string: R,
 ) -> Packet {
     let reason_string = if session.request_problem_info {
-        Some(Arc::new(reason_string.into().into_owned()))
+        Some(Arc::from(reason_string.into()))
     } else {
         None
     };
@@ -70,7 +70,7 @@ pub(crate) fn build_error_disconnect<'a, R: Into<Cow<'a, str>>>(
     reason_string: R,
 ) -> Packet {
     let reason_string = if session.request_problem_info {
-        Some(Arc::new(reason_string.into().into_owned()))
+        Some(Arc::from(reason_string.into()))
     } else {
         None
     };

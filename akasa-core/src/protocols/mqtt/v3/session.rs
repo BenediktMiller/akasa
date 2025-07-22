@@ -26,9 +26,9 @@ pub struct Session {
     pub(super) qos2_pids: HashMap<Pid, u64>,
 
     pub(super) client_id: ClientId,
-    pub client_identifier: Arc<String>,
+    pub client_identifier: Arc<str>,
     pub assigned_client_id: bool,
-    pub username: Option<Arc<String>>,
+    pub username: Option<Arc<str>>,
     pub keep_alive: u16,
     pub clean_session: bool,
     pub last_will: Option<LastWill>,
@@ -71,7 +71,7 @@ impl Session {
             qos2_pids: HashMap::new(),
 
             client_id: ClientId::max_value(),
-            client_identifier: Arc::new(String::new()),
+            client_identifier: Arc::from(String::new()),
             assigned_client_id: false,
             username: None,
             keep_alive: 0,

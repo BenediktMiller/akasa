@@ -19,6 +19,12 @@ pub async fn serve(
         TcpSocket::new_v6()?
     };
     socket.set_reuseaddr(true)?;
+    #[cfg(all(
+        unix,
+        not(target_os = "solaris"),
+        not(target_os = "illumos"),
+        not(target_os = "cygwin"),
+    ))]
     if reuse_port {
         labels.push("reuseport");
         socket.set_reuseport(true)?;

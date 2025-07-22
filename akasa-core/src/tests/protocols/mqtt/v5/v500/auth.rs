@@ -36,12 +36,12 @@ async fn test_auth_simple_success() {
     let global = Arc::new(GlobalState::new(config));
     let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-    let auth_method = Arc::new("SCRAM-SHA-256".to_owned());
+    let auth_method = "SCRAM-SHA-256".into();
     let scram_client = ScramClient::new(user, pass, None);
     let (scram_client, client_first) = scram_client.client_first();
     println!("client_first: {client_first}");
 
-    let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
+    let mut connect = Connect::new("client".into(), 32);
     connect.properties.auth_method = Some(Arc::clone(&auth_method));
     connect.properties.auth_data = Some(Bytes::from(client_first));
     client.write_packet(connect.into()).await;
@@ -93,7 +93,7 @@ async fn test_auth_missing_auth_method() {
     let global = Arc::new(GlobalState::new(config));
     let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-    let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
+    let mut connect = Connect::new("client".into(), 32);
     connect.properties.auth_method = None;
     connect.properties.auth_data = Some(Bytes::from("xxxx/invalid/"));
     client.write_packet(connect.into()).await;
@@ -102,7 +102,7 @@ async fn test_auth_missing_auth_method() {
     if let Packet::Connack(connack) = received_pkt {
         assert_eq!(connack.reason_code, ConnectReasonCode::ProtocolError);
         assert_eq!(
-            connack.properties.reason_string.unwrap().as_str(),
+            connack.properties.reason_string.unwrap().as_ref(),
             "AuthenticationMethod is missing"
         );
     } else {
@@ -119,8 +119,8 @@ async fn test_auth_method_not_support() {
         let global = Arc::new(GlobalState::new(config));
         let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-        let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
-        connect.properties.auth_method = Some(Arc::new(method.to_owned()));
+        let mut connect = Connect::new("client".into(), 32);
+        connect.properties.auth_method = Some(method.into());
         connect.properties.auth_data = Some(Bytes::from("xxxx/invalid/"));
         client.write_packet(connect.into()).await;
 
@@ -128,7 +128,7 @@ async fn test_auth_method_not_support() {
         if let Packet::Connack(connack) = received_pkt {
             assert_eq!(connack.reason_code, ConnectReasonCode::BadAuthMethod);
             assert_eq!(
-                connack.properties.reason_string.unwrap().as_str(),
+                connack.properties.reason_string.unwrap().as_ref(),
                 "auth method not supported"
             );
         } else {
@@ -162,10 +162,10 @@ async fn test_auth_invalid_client_first() {
     let global = Arc::new(GlobalState::new(config));
     let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-    let auth_method = Arc::new("SCRAM-SHA-256".to_owned());
+    let auth_method = "SCRAM-SHA-256".into();
     let client_first = "xxxx/invalid/";
 
-    let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
+    let mut connect = Connect::new("client".into(), 32);
     connect.properties.auth_method = Some(Arc::clone(&auth_method));
     connect.properties.auth_data = Some(Bytes::from(client_first));
     client.write_packet(connect.into()).await;
@@ -174,7 +174,7 @@ async fn test_auth_invalid_client_first() {
     if let Packet::Connack(connack) = received_pkt {
         assert_eq!(connack.reason_code, ConnectReasonCode::NotAuthorized);
         assert_eq!(
-            connack.properties.reason_string.unwrap().as_str(),
+            connack.properties.reason_string.unwrap().as_ref(),
             "invalid client first data"
         );
     } else {
@@ -207,12 +207,12 @@ async fn test_auth_invalid_password() {
     let global = Arc::new(GlobalState::new(config));
     let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-    let auth_method = Arc::new("SCRAM-SHA-256".to_owned());
+    let auth_method = "SCRAM-SHA-256".into();
     let scram_client = ScramClient::new(user, "invalid pass xxx", None);
     let (scram_client, client_first) = scram_client.client_first();
     println!("client_first: {client_first}");
 
-    let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
+    let mut connect = Connect::new("client".into(), 32);
     connect.properties.auth_method = Some(Arc::clone(&auth_method));
     connect.properties.auth_data = Some(Bytes::from(client_first));
     client.write_packet(connect.into()).await;
@@ -243,7 +243,7 @@ async fn test_auth_invalid_password() {
     if let Packet::Connack(connack) = received_pkt {
         assert_eq!(connack.reason_code, ConnectReasonCode::NotAuthorized);
         assert_eq!(
-            connack.properties.reason_string.unwrap().as_str(),
+            connack.properties.reason_string.unwrap().as_ref(),
             "invalid client final data"
         );
     } else {
@@ -277,12 +277,12 @@ async fn test_auth_invalid_client_final() {
     let global = Arc::new(GlobalState::new(config));
     let (task, mut client) = MockConn::start_with_global(111, Arc::clone(&global));
 
-    let auth_method = Arc::new("SCRAM-SHA-256".to_owned());
+    let auth_method = "SCRAM-SHA-256".into();
     let scram_client = ScramClient::new(user, "invalid pass xxx", None);
     let (_, client_first) = scram_client.client_first();
     println!("client_first: {client_first}");
 
-    let mut connect = Connect::new(Arc::new("client".to_owned()), 32);
+    let mut connect = Connect::new("client".into(), 32);
     connect.properties.auth_method = Some(Arc::clone(&auth_method));
     connect.properties.auth_data = Some(Bytes::from(client_first));
     client.write_packet(connect.into()).await;
@@ -310,7 +310,7 @@ async fn test_auth_invalid_client_final() {
     if let Packet::Connack(connack) = received_pkt {
         assert_eq!(connack.reason_code, ConnectReasonCode::NotAuthorized);
         assert_eq!(
-            connack.properties.reason_string.unwrap().as_str(),
+            connack.properties.reason_string.unwrap().as_ref(),
             "invalid client final data"
         );
     } else {

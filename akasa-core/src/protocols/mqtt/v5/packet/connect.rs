@@ -76,7 +76,7 @@ pub(crate) async fn handle_connect<T: AsyncWrite + Unpin>(
     session.clean_start = packet.clean_start;
     session.client_identifier = if packet.client_id.is_empty() {
         session.assigned_client_id = true;
-        Arc::new(uuid::Uuid::new_v4().to_string())
+        Arc::from(uuid::Uuid::new_v4().to_string())
     } else {
         Arc::clone(&packet.client_id)
     };
@@ -221,7 +221,7 @@ pub(crate) async fn session_connect<T: AsyncWrite + Unpin>(
 ) -> io::Result<bool> {
     let mut session_present = false;
     match global
-        .add_client(session.client_identifier.as_str(), session.protocol)
+        .add_client(&session.client_identifier, session.protocol)
         .await?
     {
         // not allowed, so this is dead branch.

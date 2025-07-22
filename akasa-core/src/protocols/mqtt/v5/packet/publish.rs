@@ -366,9 +366,10 @@ pub(crate) fn send_publish(
                 SharedSubscriptionMode::HashTopicName => shared_clients.get_by_hash(msg.topic_name),
             };
             // TODO: optimize this alloc later
-            let full_filter =
-                TopicFilter::try_from(format!("{SHARED_PREFIX}{group_name}/{subscribe_filter}"))
-                    .expect("full topic filter");
+            let full_filter = TopicFilter::try_from(
+                format!("{SHARED_PREFIX}{group_name}/{subscribe_filter}").as_str(),
+            )
+            .expect("full topic filter");
             senders.push((client_id, full_filter, subscribe_qos));
         }
     }

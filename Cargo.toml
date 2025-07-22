@@ -1,4 +1,3 @@
-
 [workspace]
 members = ["akasa-core", "akasa"]
 resolver = "2"

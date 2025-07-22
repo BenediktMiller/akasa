@@ -14,7 +14,7 @@ use flume::bounded;
 use futures_lite::{FutureExt, Stream};
 use futures_sink::Sink;
 use futures_util::TryFutureExt;
-use mqtt_proto::{decode_raw_header, v3, v5, Error, Protocol};
+use mqtt_proto::{decode_raw_header, v3, v5, Error, IoErrorKind, Protocol};
 use openssl::ssl::{NameType, Ssl, SslAcceptor, SslFiletype, SslMethod, SslVerifyMode};
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 use tokio_openssl::SslStream;
@@ -161,7 +161,7 @@ pub async fn handle_accept<
         .or(async {
             let _ = timeout_receiver.recv_async().await;
             log::info!("timeout when decode raw mqtt header: {}", peer);
-            Err(Error::IoError(io::ErrorKind::TimedOut, String::new()))
+            Err(Error::IoError(IoErrorKind::TimedOut))
         })
         .await?;
     if packet_type != 0b00010000 {
@@ -172,7 +172,7 @@ pub async fn handle_accept<
         .or(async {
             let _ = timeout_receiver.recv_async().await;
             log::info!("timeout when decode mqtt protocol: {}", peer);
-            Err(Error::IoError(io::ErrorKind::TimedOut, String::new()))
+            Err(Error::IoError(IoErrorKind::TimedOut))
         })
         .await?;
     match protocol {

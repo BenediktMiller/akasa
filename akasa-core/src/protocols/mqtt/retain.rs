@@ -25,7 +25,7 @@ struct RetainNode {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct RetainContent {
     // the publisher client id
-    pub client_identifier: Arc<String>,
+    pub client_identifier: Arc<str>,
     pub qos: QoS,
     pub topic_name: TopicName,
     pub payload: Bytes,
@@ -161,7 +161,7 @@ impl RetainNode {
 
 impl RetainContent {
     pub fn new(
-        client_identifier: Arc<String>,
+        client_identifier: Arc<str>,
         qos: QoS,
         topic_name: TopicName,
         payload: Bytes,
@@ -189,10 +189,9 @@ mod tests {
         fn from(
             (topic_name, qos, payload, client_identifier): (&str, QoS, Vec<u8>, &str),
         ) -> RetainContent {
-            let client_identifier = Arc::new(client_identifier.to_owned());
-            let topic_name = TopicName::try_from(topic_name.to_owned()).unwrap();
+            let topic_name = TopicName::try_from(topic_name).unwrap();
             let payload = Bytes::from(payload);
-            Self::new(client_identifier, qos, topic_name, payload, None, 0)
+            Self::new(client_identifier.into(), qos, topic_name, payload, None, 0)
         }
     }
 
